@@ -27,13 +27,28 @@ app.get('/', function (req, res) {
 
 app.get('/students', function (req, res){
   let queryData = url.parse(req.url, true).query;
-  //console.log('queryData', queryData)
   let id = parseInt(queryData.id)
-  console.log('id', id)
+  console.log('get request made, id:', id)
   getStudent(id) 
     .then(function (student) {
        res.send(mustache.render(homepageTemplate, { getStudentHTML: renderStudent(student) }))
-      //res.redirect('/')
+    
+  })
+    .catch(function (error) {
+      console.log(error)
+      res.status(500).send('Something went wrong.')
+  })
+})
+
+app.get('/assignments', function (req, res){
+  let queryData = url.parse(req.url, true).query;
+  console.log('queryData', queryData)
+  let name = queryData.name
+  console.log('name', name)
+  getAssignment(name) 
+    .then(function (assignment) {
+       res.send(mustache.render(homepageTemplate, { getAssignmentHTML: renderAllAssignmentData(assignment) }))
+     
     
   })
     .catch(function (error) {
@@ -92,6 +107,18 @@ function renderStudent (student) {
   return `<h3>search result:</h3><p>student name: ${student.name}</p>`
 }
 
+function renderAllAssignmentData (assignmentArr){
+  return '<div>' + '<p> Assignment: '+assignmentArr[0].assignment_name+'</p>' + assignmentArr.map(renderAssignmentData).join('') + '</div>'
+  
+}
+
+function renderAssignmentData(assignment){
+  let assigmentStatus;
+  if(assignment.isComplete === 1){assigmentStatus = 'complete'}
+  else{assigmentStatus = 'incomplete'}
+  return `<p>${assignment.name}: ${assigmentStatus}.</p>`
+}
+
 
 // -----------------------------------------------------------------------------
 // Database Queries
@@ -117,16 +144,35 @@ function getOneCohort (slug) {
 }
 
 function getStudent(id) {
-  console.log("id", id)
-  return db.raw('SELECT * FROM Students WHERE id = ?', [id])
+  console.log("in getStudent fxn, id:", id)
+  return db.raw('SELECT * FROM Students WHERE id = ?', [id])  
+  //return db.raw('SELECT * FROM Students')  
     .then(function(results) {
+      console.log(results)
+      //return results
       if (results.length !== 1) {
+        
         throw null
       } else {
         return results[0]
       }
   })
 }
+
+function getAssignment(name) {
+  
+  // return db.raw('SELECT * FROM Assignments WHERE assignment_name = ?', [name])
+  return db.raw('SELECT assignment_name,  name, isComplete FROM Assignments JOIN Students ON Assignments.studentID = Students.id WHERE assignment_name = ?', [name])
+    .then(function(results) {
+      console.log('results', results)
+      if (!results) {
+        throw null
+      } else {
+        return results
+      }
+  })
+}
+
 function createCohort (cohort) {
   return db.raw('INSERT INTO Cohorts (title, slug, isActive) VALUES (?, ?, true)', [cohort.title, cohort.slug])
 }

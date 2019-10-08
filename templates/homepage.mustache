@@ -24,13 +24,21 @@
   </form>
 
 
-  <h2>Student Search</h2>
+  <h2>Search</h2>
     <form method="get" action="/students">
       <label>Student ID:</label>
-      <input id="idVal" type="number" name="id" />
+      <input type="number" name="id" />
       <input type="submit">
     </form>
-    <div>{{{getStudentHTML}}}</div>
+   
+    <form method="get" action="/assignments">
+      <label>Assignment Name:</label>
+      <input type="text" name="name" />
+      <input type="submit">
+    </form>
+
+  <div>{{{getStudentHTML}}}</div>
+  <div>{{{getAssignmentHTML}}}</div>
 
   <h2>List of Cohorts</h2>
   <div>{{{cohortsListHTML}}}</div>
