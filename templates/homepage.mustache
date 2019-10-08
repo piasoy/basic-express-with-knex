@@ -11,17 +11,44 @@
 
 <body>
   <h1>Headmaster Homepage!</h1>
-  <main>{{{cohortsListHTML}}}</main>
+ 
 
+  <h2>Create Cohort</h2>
   <form action="/cohorts" method="post">
     <label>Cohort title:</label>
     <input type="text" name="title" />
 
     <label>Slug:</label>
     <input type="text" name="slug" />
-
     <button type="submit">Add Cohort</button>
   </form>
+
+
+  <h2>Student Search</h2>
+    <form method="get" action="/students">
+      <label>Student ID:</label>
+      <input id="idVal" type="number" name="id" />
+      <input type="submit">
+    </form>
+    <div>{{{getStudentHTML}}}</div>
+
+  <h2>List of Cohorts</h2>
+  <div>{{{cohortsListHTML}}}</div>
+  
+
+   
+ 
+    
+
+  <!-- <script>
+      function getID() {
+          let id = document.getElementById('idVal').value;
+          location.href = '/students/' + id;
+          return false;
+      }    
+  </script> -->
+
+
 </body>
 
 </html>
